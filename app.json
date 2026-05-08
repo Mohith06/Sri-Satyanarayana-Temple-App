@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "templeapp",
-    "slug": "templeapp",
+    "name": "Sri Satyanarayana Temple",
+    "slug": "sstgh-temple",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "expotemplate",
-    "userInterfaceStyle": "automatic",
+    "scheme": "sstgh",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FDFAF6"
       },
       "edgeToEdgeEnabled": true
     },
@@ -31,7 +31,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#8B1A1A"
         }
       ]
     ],

@@ -13,11 +13,30 @@ const _schema = i.schema({
       imageURL: i.string().optional(),
       type: i.string().optional(),
     }),
-    colors: i.entity({
-      value: i.string(),
+    events: i.entity({
+      title: i.string(),
+      description: i.string().optional(),
+      date: i.string().indexed(),
+      time: i.string().optional(),
+      type: i.string().optional(),
+      location: i.string().optional(),
+      createdAt: i.number().indexed(),
+    }),
+    news: i.entity({
+      title: i.string(),
+      body: i.string(),
+      date: i.string().indexed(),
+      createdAt: i.number().indexed(),
+    }),
+    volunteers: i.entity({
+      name: i.string(),
+      email: i.string().indexed(),
+      phone: i.string().optional(),
+      interests: i.string(),
+      message: i.string().optional(),
+      submittedAt: i.number().indexed(),
     }),
   },
-  rooms: {},
   links: {
     $usersLinkedPrimaryUser: {
       forward: {
@@ -33,9 +52,9 @@ const _schema = i.schema({
       },
     },
   },
+  rooms: {},
 });
 
-// This helps TypeScript display nicer intellisense
 type _AppSchema = typeof _schema;
 interface AppSchema extends _AppSchema {}
 const schema: AppSchema = _schema;
