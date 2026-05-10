@@ -16,6 +16,13 @@ import { TempleColors } from "@/constants/Colors";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 
+function formatDate(text: string): string {
+  const digits = text.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
 export default function NewAnnouncementScreen() {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -71,7 +78,7 @@ export default function NewAnnouncementScreen() {
             <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 4 }}>Date * (YYYY-MM-DD)</Text>
             <TextInput
               value={date}
-              onChangeText={setDate}
+              onChangeText={(text) => setDate(formatDate(text))}
               placeholder="2024-12-31"
               placeholderTextColor={TempleColors.border}
               keyboardType="numeric"
@@ -92,13 +99,20 @@ export default function NewAnnouncementScreen() {
           />
         </Card>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+        <View style={{ paddingHorizontal: 16, marginTop: 16, gap: 10 }}>
           <TouchableOpacity
             onPress={handleSave}
             disabled={saving}
             style={{ backgroundColor: saving ? TempleColors.border : TempleColors.saffron, borderRadius: 12, paddingVertical: 15, alignItems: "center" }}
           >
             <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>{saving ? "Publishing…" : "Publish Announcement"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            disabled={saving}
+            style={{ borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
+          >
+            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

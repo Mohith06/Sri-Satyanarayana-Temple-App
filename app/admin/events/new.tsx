@@ -18,6 +18,13 @@ import { Card } from "@/components/ui/Card";
 
 const EVENT_TYPES = ["puja", "festival", "special", "class"];
 
+function formatDate(text: string): string {
+  const digits = text.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
 export default function NewEventScreen() {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -68,7 +75,7 @@ export default function NewEventScreen() {
           <FormField
             label="Date * (YYYY-MM-DD)"
             value={date}
-            onChange={setDate}
+            onChange={(text) => setDate(formatDate(text))}
             placeholder="2024-12-31"
             keyboard="numeric"
           />
@@ -124,7 +131,7 @@ export default function NewEventScreen() {
           />
         </Card>
 
-        <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+        <View style={{ paddingHorizontal: 16, marginTop: 16, gap: 10 }}>
           <TouchableOpacity
             onPress={handleSave}
             disabled={saving}
@@ -137,6 +144,21 @@ export default function NewEventScreen() {
           >
             <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
               {saving ? "Saving…" : "Create Event"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            disabled={saving}
+            style={{
+              borderRadius: 12,
+              paddingVertical: 15,
+              alignItems: "center",
+              borderWidth: 1.5,
+              borderColor: TempleColors.border,
+            }}
+          >
+            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>
+              Cancel
             </Text>
           </TouchableOpacity>
         </View>

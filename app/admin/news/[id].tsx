@@ -16,6 +16,13 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
+function formatDate(text: string): string {
+  const digits = text.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
 export default function EditAnnouncementScreen() {
   const router = useRouter();
   const { id: newsId } = useLocalSearchParams<{ id: string }>();
@@ -96,7 +103,7 @@ export default function EditAnnouncementScreen() {
             <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 4 }}>Date (YYYY-MM-DD)</Text>
             <TextInput
               value={date}
-              onChangeText={setDate}
+              onChangeText={(text) => setDate(formatDate(text))}
               placeholder="2024-12-31"
               placeholderTextColor={TempleColors.border}
               keyboardType="numeric"
@@ -130,6 +137,13 @@ export default function EditAnnouncementScreen() {
             style={{ backgroundColor: TempleColors.closedRed + "15", borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1, borderColor: TempleColors.closedRed + "40" }}
           >
             <Text style={{ color: TempleColors.closedRed, fontWeight: "700", fontSize: 15 }}>Delete Announcement</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            disabled={saving}
+            style={{ borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
+          >
+            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

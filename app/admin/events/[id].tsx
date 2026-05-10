@@ -18,6 +18,13 @@ import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 const EVENT_TYPES = ["puja", "festival", "special", "class"];
 
+function formatDate(text: string): string {
+  const digits = text.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
 export default function EditEventScreen() {
   const router = useRouter();
   const { id: eventId } = useLocalSearchParams<{ id: string }>();
@@ -106,7 +113,7 @@ export default function EditEventScreen() {
         <SectionHeader title="Event Details" />
         <Card>
           <FieldRow label="Title *" value={title} onChange={setTitle} placeholder="Event name" />
-          <FieldRow label="Date * (YYYY-MM-DD)" value={date} onChange={setDate} placeholder="2024-12-31" keyboard="numeric" />
+          <FieldRow label="Date * (YYYY-MM-DD)" value={date} onChange={(text) => setDate(formatDate(text))} placeholder="2024-12-31" keyboard="numeric" />
           <FieldRow label="Time" value={time} onChange={setTime} placeholder="e.g. 10:00 AM" />
           <FieldRow label="Location" value={location} onChange={setLocation} placeholder="e.g. Main Hall" last />
         </Card>
@@ -159,6 +166,13 @@ export default function EditEventScreen() {
             style={{ backgroundColor: TempleColors.closedRed + "15", borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1, borderColor: TempleColors.closedRed + "40" }}
           >
             <Text style={{ color: TempleColors.closedRed, fontWeight: "700", fontSize: 15 }}>Delete Event</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            disabled={saving}
+            style={{ borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
+          >
+            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

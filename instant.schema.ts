@@ -22,6 +22,11 @@ const _schema = i.schema({
       location: i.string().optional(),
       createdAt: i.number().indexed(),
     }),
+    gallery: i.entity({
+      category: i.string().indexed(),
+      caption: i.string().optional(),
+      createdAt: i.number().indexed(),
+    }),
     news: i.entity({
       title: i.string(),
       body: i.string(),
@@ -50,6 +55,10 @@ const _schema = i.schema({
         has: "many",
         label: "linkedGuestUsers",
       },
+    },
+    galleryImage: {
+      forward: { on: "gallery", has: "one", label: "image" },
+      reverse: { on: "$files", has: "many", label: "galleryItems" },
     },
   },
   rooms: {},

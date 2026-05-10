@@ -11,6 +11,14 @@ const rules = {
       delete: "true",
     },
   },
+  gallery: {
+    allow: {
+      view: "true",
+      create: "true",
+      update: "true",
+      delete: "true",
+    },
+  },
   news: {
     allow: {
       view: "true",
@@ -25,6 +33,14 @@ const rules = {
       create: "true",
       update: "false",
       delete: "false",
+    },
+  },
+  $files: {
+    allow: {
+      view: "true",
+      create: "true",
+      update: "true",
+      delete: "true",
     },
   },
 } satisfies InstantRules;
