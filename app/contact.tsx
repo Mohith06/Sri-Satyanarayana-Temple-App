@@ -12,6 +12,7 @@ import {
   TEMPLE_FACEBOOK,
   GOOGLE_MAPS_URL,
   APPLE_MAPS_URL,
+  TEMPLE_PRIVACY_POLICY_URL,
 } from "@/constants/TempleInfo";
 import { TEMPLE_HOURS } from "@/lib/templeData";
 
@@ -183,6 +184,18 @@ export default function ContactScreen() {
           <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Get Directions</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Legal */}
+      <SectionHeader title="Legal" />
+      <Card>
+        <ContactRow
+          icon="document-text-outline"
+          label="PRIVACY POLICY"
+          value="View our privacy policy"
+          onPress={() => Linking.openURL(TEMPLE_PRIVACY_POLICY_URL)}
+          color={TempleColors.textSecondary}
+        />
+      </Card>
     </ScrollView>
     </>
   );

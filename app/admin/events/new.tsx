@@ -15,6 +15,7 @@ import { db } from "@/lib/db";
 import { TempleColors } from "@/constants/Colors";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
+import { sendPushNotifications } from "@/lib/notifications";
 
 const EVENT_TYPES = ["puja", "festival", "special", "class"];
 
@@ -35,6 +36,8 @@ export default function NewEventScreen() {
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const { data: tokenData } = db.useQuery({ pushTokens: {} });
+
   const handleSave = async () => {
     if (!title.trim()) { Alert.alert("Required", "Please enter an event title."); return; }
     if (!date.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -52,6 +55,13 @@ export default function NewEventScreen() {
           description: description.trim(),
           createdAt: Date.now(),
         })
+      );
+      const tokens = (tokenData?.pushTokens ?? []).map((t) => t.token);
+      await sendPushNotifications(
+        tokens,
+        "New Event Added 🙏",
+        `${title.trim()}${time.trim() ? ` · ${time.trim()}` : ""}`,
+        { type: "event" }
       );
       router.back();
     } catch {

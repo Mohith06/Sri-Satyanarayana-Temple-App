@@ -15,6 +15,7 @@ import { db } from "@/lib/db";
 import { TempleColors } from "@/constants/Colors";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
+import { sendPushNotifications } from "@/lib/notifications";
 
 function formatDate(text: string): string {
   const digits = text.replace(/\D/g, "").slice(0, 8);
@@ -29,6 +30,8 @@ export default function NewAnnouncementScreen() {
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const { data: tokenData } = db.useQuery({ pushTokens: {} });
 
   const handleSave = async () => {
     if (!title.trim()) { Alert.alert("Required", "Please enter a title."); return; }
@@ -45,6 +48,13 @@ export default function NewAnnouncementScreen() {
           body: body.trim(),
           createdAt: Date.now(),
         })
+      );
+      const tokens = (tokenData?.pushTokens ?? []).map((t) => t.token);
+      await sendPushNotifications(
+        tokens,
+        "Temple Announcement 📢",
+        title.trim(),
+        { type: "news" }
       );
       router.back();
     } catch {

@@ -6,22 +6,26 @@ const ADMIN_STORAGE_KEY = "@sstgh_admin_session";
 
 interface AdminContextValue {
   isAdmin: boolean;
+  isLoading: boolean;
   login: (code: string) => boolean;
   logout: () => void;
 }
 
 const AdminContext = createContext<AdminContextValue>({
   isAdmin: false,
+  isLoading: true,
   login: () => false,
   logout: () => {},
 });
 
 export function AdminProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     AsyncStorage.getItem(ADMIN_STORAGE_KEY).then((val) => {
       if (val === "true") setIsAdmin(true);
+      setIsLoading(false);
     });
   }, []);
 
@@ -41,7 +45,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }): Reac
 
   return React.createElement(
     AdminContext.Provider,
-    { value: { isAdmin, login, logout } },
+    { value: { isAdmin, isLoading, login, logout } },
     children
   );
 }

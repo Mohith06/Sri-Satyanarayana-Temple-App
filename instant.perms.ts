@@ -43,6 +43,14 @@ const rules = {
       delete: "true",
     },
   },
+  pushTokens: {
+    allow: {
+      view: "true",
+      create: "true",
+      update: "true",
+      delete: "false",
+    },
+  },
 } satisfies InstantRules;
 
 export default rules;

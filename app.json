@@ -9,14 +9,16 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sstgh.temple"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FDFAF6"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.sstgh.temple"
     },
     "web": {
       "bundler": "metro",
@@ -25,6 +27,20 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#8B1A1A",
+          "defaultChannel": "temple-updates"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sri Satyanarayana Temple needs access to your photo library to upload gallery images."
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -37,6 +53,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "78fb3f0d-1af4-43ed-a1a3-d95b1c568cd7"
+      }
+    },
+    "owner": "mohith1017"
   }
 }

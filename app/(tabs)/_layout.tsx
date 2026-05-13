@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { TempleColors } from "@/constants/Colors";
+import { db } from "@/lib/db";
+import { useUnread } from "@/lib/unread";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -9,6 +11,13 @@ function TabIcon({ name, color, size }: { name: IoniconName; color: string; size
 }
 
 export default function TabLayout() {
+  const { lastSeenNews } = useUnread();
+  const { data } = db.useQuery({ news: {} });
+  const unreadCount = (data?.news ?? []).filter(
+    (item) => (item.createdAt ?? 0) > lastSeenNews
+  ).length;
+  const badge = unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined;
+
   return (
     <Tabs
       screenOptions={{
@@ -74,6 +83,12 @@ export default function TabLayout() {
             <TabIcon name="menu" color={color} size={size} />
           ),
           headerTitle: "More",
+          tabBarBadge: badge,
+          tabBarBadgeStyle: {
+            backgroundColor: TempleColors.deepRed,
+            color: "#fff",
+            fontSize: 10,
+          },
         }}
       />
     </Tabs>

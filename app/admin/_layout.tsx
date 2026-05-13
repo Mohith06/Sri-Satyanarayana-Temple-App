@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, View, ActivityIndicator } from "react-native";
 import { Stack, Redirect, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useAdmin } from "@/lib/admin";
@@ -15,8 +15,16 @@ function BackButton() {
 }
 
 export default function AdminLayout() {
-  const { isAdmin, logout } = useAdmin();
+  const { isAdmin, isLoading, logout } = useAdmin();
   const router = useRouter();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: TempleColors.warmWhite }}>
+        <ActivityIndicator size="large" color={TempleColors.deepRed} />
+      </View>
+    );
+  }
 
   if (!isAdmin) return <Redirect href="/" />;
 

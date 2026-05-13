@@ -41,6 +41,11 @@ const _schema = i.schema({
       message: i.string().optional(),
       submittedAt: i.number().indexed(),
     }),
+    pushTokens: i.entity({
+      token: i.string().unique().indexed(),
+      platform: i.string().optional(),
+      createdAt: i.number().indexed(),
+    }),
   },
   links: {
     $usersLinkedPrimaryUser: {

@@ -39,17 +39,33 @@ export const SERVICES_LIST: Service[] = [
     id: "daily-aarthi",
     name: "Daily Aarthi",
     schedule: "Every day",
-    time: "Morning & Evening",
+    time: "11:00 AM · 11:30 AM · 7:00 PM · 8:00 PM",
     description:
-      "Daily worship ceremonies performed every morning and evening according to the temple schedule.",
+      "Daily worship ceremonies with morning aarthi at 11:00 AM (Sai Baba) and 11:30 AM (Sri Satyanarayana), and evening aarthi at 7:00 PM (Sai Baba) and 8:00 PM (Sri Satyanarayana).",
   },
   {
-    id: "abhishekam",
-    name: "Abhishekam",
-    schedule: "Saturday & Sunday",
-    time: "9:00 AM",
+    id: "satyanarayana-abhishekam",
+    name: "Satyanarayana & Lakshmi Abhishekam",
+    schedule: "Saturday",
+    time: "10:00 AM",
     description:
-      "Sacred ritual bathing of the deities with milk, honey, and other holy substances.",
+      "Sacred ritual bathing of Sri Satyanarayana and Lakshmi deities with milk, honey, and other holy substances.",
+  },
+  {
+    id: "hanuman-abhishekam",
+    name: "Hanuman Abhishekam",
+    schedule: "Sunday",
+    time: "8:00 AM",
+    description:
+      "Weekly sacred bathing ritual dedicated to Lord Hanuman, performed with traditional Vedic ceremonies.",
+  },
+  {
+    id: "ayyappan",
+    name: "Ayyappan Abhishekam",
+    schedule: "Saturday",
+    time: "6:00 PM",
+    description:
+      "Weekly evening ritual dedicated to Lord Ayyappan, performed with traditional ceremonies.",
   },
   {
     id: "satyanarayana-puja",
@@ -62,16 +78,16 @@ export const SERVICES_LIST: Service[] = [
   {
     id: "hanuman-chalisa",
     name: "Hanuman Chalisa",
-    schedule: "Saturday",
-    time: "Evening",
+    schedule: "Tuesday",
+    time: "7:30 PM",
     description:
       "Weekly recitation of the Hanuman Chalisa, a devotional hymn dedicated to Lord Hanuman.",
   },
   {
     id: "vishnu-sahasranamam",
     name: "Vishnu Sahasranamam",
-    schedule: "Sunday",
-    time: "Morning",
+    schedule: "Wednesday",
+    time: "7:30 PM",
     description:
       "Recitation of the thousand names of Lord Vishnu, a powerful and sacred prayer.",
   },
@@ -79,7 +95,7 @@ export const SERVICES_LIST: Service[] = [
     id: "lalitha-sahasranamam",
     name: "Lalitha Sahasranamam",
     schedule: "Friday",
-    time: "Evening",
+    time: "7:30 PM",
     description:
       "Recitation of the thousand names of Goddess Lalitha, dedicated to the Divine Mother.",
   },
@@ -90,14 +106,6 @@ export const SERVICES_LIST: Service[] = [
     time: "As scheduled",
     description:
       "Special monthly ceremony dedicated to Shirdi Sai Baba, a revered saint venerated by millions.",
-  },
-  {
-    id: "ayyappan",
-    name: "Ayyappan Ritual",
-    schedule: "Saturday",
-    time: "Morning",
-    description:
-      "Weekly ritual dedicated to Lord Ayyappan, performed with traditional ceremonies.",
   },
 ];
 

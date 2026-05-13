@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "@/lib/db";
 import { NewsCard } from "@/components/news/NewsCard";
@@ -9,10 +9,19 @@ import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TempleColors } from "@/constants/Colors";
 import { useAdmin } from "@/lib/admin";
+import { useUnread } from "@/lib/unread";
 
 export default function NewsScreen() {
   const router = useRouter();
   const { isAdmin } = useAdmin();
+  const { lastSeenNews, markNewsAsRead } = useUnread();
+
+  // Clear the badge as soon as the user lands on this screen
+  useFocusEffect(
+    useCallback(() => {
+      markNewsAsRead();
+    }, [])
+  );
 
   const { data, isLoading } = db.useQuery({
     news: {
@@ -46,6 +55,7 @@ export default function NewsScreen() {
               title={item.title}
               body={item.body}
               date={item.date}
+              isNew={(item.createdAt ?? 0) > lastSeenNews}
             />
           ))}
         </ScrollView>

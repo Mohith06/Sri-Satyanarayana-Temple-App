@@ -9,9 +9,10 @@ interface NewsCardProps {
   title: string;
   body: string;
   date: string;
+  isNew?: boolean;
 }
 
-export function NewsCard({ id, title, body, date }: NewsCardProps) {
+export function NewsCard({ id, title, body, date, isNew = false }: NewsCardProps) {
   const router = useRouter();
   const preview = body.length > 120 ? body.slice(0, 120).trim() + "…" : body;
 
@@ -43,21 +44,37 @@ export function NewsCard({ id, title, body, date }: NewsCardProps) {
         shadowRadius: 6,
         elevation: 3,
         borderWidth: 1,
-        borderColor: TempleColors.border,
+        borderColor: isNew ? TempleColors.saffron : TempleColors.border,
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <View
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: TempleColors.saffron,
-          }}
-        />
-        <Text style={{ fontSize: 11, color: TempleColors.textSecondary, fontWeight: "500" }}>
-          {formatted}
-        </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: TempleColors.saffron,
+            }}
+          />
+          <Text style={{ fontSize: 11, color: TempleColors.textSecondary, fontWeight: "500" }}>
+            {formatted}
+          </Text>
+        </View>
+        {isNew && (
+          <View
+            style={{
+              backgroundColor: TempleColors.deepRed,
+              borderRadius: 6,
+              paddingHorizontal: 7,
+              paddingVertical: 2,
+            }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff", letterSpacing: 0.5 }}>
+              NEW
+            </Text>
+          </View>
+        )}
       </View>
       <Text
         style={{

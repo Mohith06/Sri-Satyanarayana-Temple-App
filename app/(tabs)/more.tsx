@@ -15,11 +15,13 @@ const SECTIONS: {
     items: [
       { label: "Announcements", subtitle: "News and updates from the temple", icon: "newspaper-outline", route: "/news", color: TempleColors.saffron },
       { label: "Gallery", subtitle: "Photos from events and pujas", icon: "images-outline", route: "/gallery", color: "#7B6CF6" },
+      { label: "Learn & Pray", subtitle: "Mantras, prayers, and their meanings", icon: "book-outline", route: "/education", color: TempleColors.deepRed },
     ],
   },
   {
     title: "Get Involved",
     items: [
+      { label: "Book a Puja", subtitle: "Schedule a puja or contact the pandit", icon: "flower-outline", route: "/puja", color: TempleColors.saffron },
       { label: "Volunteer", subtitle: "Sign up to help the temple", icon: "people-outline", route: "/volunteer", color: TempleColors.openGreen },
       { label: "Donate", subtitle: "Support our mission and campaigns", icon: "heart-outline", route: "/donate", color: TempleColors.closedRed },
     ],
@@ -28,6 +30,7 @@ const SECTIONS: {
     title: "About",
     items: [
       { label: "About the Temple", subtitle: "History, mission, and leadership", icon: "information-circle-outline", route: "/about", color: "#0078D4" },
+      { label: "Community Projects", subtitle: "Outreach, charity, and cultural programs", icon: "globe-outline", route: "/community", color: "#2D7D46" },
       { label: "Contact Us", subtitle: "Address, phone, and directions", icon: "call-outline", route: "/contact", color: TempleColors.textSecondary },
     ],
   },

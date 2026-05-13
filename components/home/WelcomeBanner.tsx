@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { TempleColors } from "@/constants/Colors";
 import { TEMPLE_NAME } from "@/constants/TempleInfo";
@@ -12,12 +13,13 @@ interface WelcomeBannerProps {
 
 export function WelcomeBanner({ onAdminPress }: WelcomeBannerProps) {
   const { isAdmin } = useAdmin();
+  const insets = useSafeAreaInsets();
 
   return (
     <View
       style={{
         backgroundColor: TempleColors.deepRed,
-        paddingTop: 56,
+        paddingTop: insets.top + 16,
         paddingBottom: 20,
         paddingHorizontal: 20,
       }}
