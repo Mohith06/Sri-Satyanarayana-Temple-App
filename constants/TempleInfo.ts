@@ -23,4 +23,4 @@ export const TEMPLE_FOUNDED_YEAR = 2013;
 export const TEMPLE_PRADISTA_DATE = "February 4, 2023";
 
 // Update this URL once the privacy policy is hosted (e.g. sstgh.org/privacy)
-export const TEMPLE_PRIVACY_POLICY_URL = "https://sstgh.org/privacy";
+export const TEMPLE_PRIVACY_POLICY_URL = "https://mohith06.github.io/sstgh-privacy/";
