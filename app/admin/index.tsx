@@ -48,6 +48,13 @@ export default function AdminDashboard() {
     ]);
   };
 
+  const deleteVolunteer = (vid: string) => {
+    Alert.alert("Delete Application", "Remove this volunteer application?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => db.transact(db.tx.volunteers[vid].delete()) },
+    ]);
+  };
+
   const deletePhoto = (gid: string) => {
     Alert.alert("Delete Photo", "Are you sure?", [
       { text: "Cancel", style: "cancel" },
@@ -216,9 +223,14 @@ export default function AdminDashboard() {
             const date = new Date(item.submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
             return (
               <View style={{ backgroundColor: TempleColors.cardBg, borderRadius: 10, padding: 14, marginBottom: 8, borderWidth: 1, borderColor: TempleColors.border }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                   <Text style={{ fontSize: 15, fontWeight: "700", color: TempleColors.textPrimary }}>{item.name}</Text>
-                  <Text style={{ fontSize: 11, color: TempleColors.textSecondary }}>{date}</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                    <Text style={{ fontSize: 11, color: TempleColors.textSecondary }}>{date}</Text>
+                    <TouchableOpacity onPress={() => deleteVolunteer(item.id)} style={{ padding: 4 }}>
+                      <Ionicons name="trash" size={16} color={TempleColors.closedRed} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 <Text style={{ fontSize: 13, color: TempleColors.saffron, marginBottom: 2 }}>{item.email}</Text>
                 {item.phone ? <Text style={{ fontSize: 12, color: TempleColors.textSecondary }}>{item.phone}</Text> : null}

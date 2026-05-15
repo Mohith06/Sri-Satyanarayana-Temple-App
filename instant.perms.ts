@@ -32,7 +32,7 @@ const rules = {
       view: "true",
       create: "true",
       update: "false",
-      delete: "false",
+      delete: "true",
     },
   },
   $files: {
