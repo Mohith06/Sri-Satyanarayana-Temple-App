@@ -62,6 +62,53 @@ export default function EducationScreen() {
 
         {/* Category cards */}
         <View style={{ paddingHorizontal: 16, paddingTop: 12, gap: 12 }}>
+          {/* Bhajans card */}
+          <TouchableOpacity
+            onPress={() => router.push("/education/bhajans" as any)}
+            activeOpacity={0.8}
+            style={{
+              backgroundColor: TempleColors.cardBg,
+              borderRadius: 14,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: TempleColors.border,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 14,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 6,
+              elevation: 3,
+            }}
+          >
+            <View
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 26,
+                backgroundColor: "#B0000018",
+                justifyContent: "center",
+                alignItems: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Ionicons name="musical-notes" size={24} color={TempleColors.deepRed} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, fontWeight: "700", color: TempleColors.textPrimary, marginBottom: 3 }}>
+                Bhajans & Aarti
+              </Text>
+              <Text style={{ fontSize: 12, color: TempleColors.textSecondary, lineHeight: 16 }}>
+                Sacred chants and devotional songs
+              </Text>
+              <Text style={{ fontSize: 11, color: TempleColors.deepRed, fontWeight: "600", marginTop: 4 }}>
+                3 tracks · YouTube
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={TempleColors.border} />
+          </TouchableOpacity>
+
           {EDUCATION_CATEGORIES.map((category) => (
             <TouchableOpacity
               key={category.id}
@@ -138,6 +185,7 @@ export default function EducationScreen() {
               <Ionicons name="chevron-forward" size={16} color={TempleColors.border} />
             </TouchableOpacity>
           ))}
+
         </View>
       </ScrollView>
     </>
