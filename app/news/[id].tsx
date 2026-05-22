@@ -1,6 +1,7 @@
 import React from "react";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View, Text, Share, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { db } from "@/lib/db";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { TempleColors } from "@/constants/Colors";
@@ -37,9 +38,22 @@ export default function NewsDetailScreen() {
     }
   })();
 
+  const handleShare = () => {
+    Share.share({ message: `${item.title}\n${formatted}\n\n${item.body}\n\nSri Satyanarayana Temple of Greater Houston` });
+  };
+
   return (
     <>
-      <Stack.Screen options={{ title: item.title.length > 30 ? item.title.slice(0, 30) + "…" : item.title }} />
+      <Stack.Screen
+        options={{
+          title: item.title.length > 30 ? item.title.slice(0, 30) + "…" : item.title,
+          headerRight: () => (
+            <TouchableOpacity onPress={handleShare} style={{ paddingHorizontal: 8 }}>
+              <Ionicons name="share-outline" size={22} color={TempleColors.deepRed} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
       <ScrollView
         style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}
         contentContainerStyle={{ padding: 20, paddingBottom: 48 }}

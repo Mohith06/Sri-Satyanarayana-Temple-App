@@ -11,11 +11,17 @@ import { AdminLoginModal } from "@/components/admin/AdminLoginModal";
 import { useAdmin } from "@/lib/admin";
 import { TempleColors } from "@/constants/Colors";
 import { TEMPLE_ADDRESS } from "@/constants/TempleInfo";
+import { db } from "@/lib/db";
+import { EVENT_TYPE_COLORS } from "@/lib/templeData";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { isAdmin, logout } = useAdmin();
   const [loginVisible, setLoginVisible] = useState(false);
+
+  const { data: eventsData } = db.useQuery({ events: { $: { order: { date: "asc" } } } });
+  const today = new Date().toISOString().split("T")[0];
+  const nextEvent = (eventsData?.events ?? []).find((e) => e.date >= today) ?? null;
 
   const handleAdminPress = () => {
     if (isAdmin) {
@@ -71,6 +77,49 @@ export default function HomeScreen() {
       <Card>
         <TodaySchedule />
       </Card>
+
+      {nextEvent ? (
+        <>
+          <SectionHeader title="Upcoming Event" />
+          <TouchableOpacity
+            onPress={() => router.push("/(tabs)/calendar" as any)}
+            activeOpacity={0.8}
+            style={{ marginHorizontal: 16, marginBottom: 8 }}
+          >
+            <View
+              style={{
+                backgroundColor: TempleColors.cardBg,
+                borderRadius: 12,
+                padding: 14,
+                borderLeftWidth: 4,
+                borderLeftColor: EVENT_TYPE_COLORS[nextEvent.type ?? "default"] ?? EVENT_TYPE_COLORS.default,
+                borderWidth: 1,
+                borderColor: TempleColors.border,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.06,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: "700", color: TempleColors.textPrimary, marginBottom: 2 }}>
+                  {nextEvent.title}
+                </Text>
+                <Text style={{ fontSize: 12, color: TempleColors.textSecondary }}>
+                  {new Date(nextEvent.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                  {nextEvent.time ? ` · ${nextEvent.time}` : ""}
+                  {nextEvent.location ? ` · ${nextEvent.location}` : ""}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={TempleColors.border} />
+            </View>
+          </TouchableOpacity>
+        </>
+      ) : null}
 
       <SectionHeader title="Quick Links" />
       <View style={{ paddingHorizontal: 4, marginTop: 4 }}>

@@ -114,6 +114,7 @@ export default function CalendarScreen() {
             <EventCard
               key={event.id}
               title={event.title}
+              date={event.date}
               time={event.time}
               location={event.location}
               type={event.type}

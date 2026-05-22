@@ -1,18 +1,31 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, Share } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TempleColors } from "@/constants/Colors";
 import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from "@/lib/templeData";
 
 interface EventCardProps {
   title: string;
+  date?: string;
   time?: string;
   location?: string;
   type?: string;
   description?: string;
 }
 
-export function EventCard({ title, time, location, type, description }: EventCardProps) {
+export function EventCard({ title, date, time, location, type, description }: EventCardProps) {
+  const handleShare = () => {
+    const parts = [title];
+    if (date) {
+      try {
+        parts.push(new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
+      } catch { parts.push(date); }
+    }
+    if (time) parts.push(`Time: ${time}`);
+    if (location) parts.push(`Location: ${location}`);
+    parts.push("Sri Satyanarayana Temple of Greater Houston");
+    Share.share({ message: parts.join("\n") });
+  };
   const typeColor = EVENT_TYPE_COLORS[type ?? "default"] ?? EVENT_TYPE_COLORS.default;
   const typeLabel = EVENT_TYPE_LABELS[type ?? ""] ?? type ?? "";
 
@@ -46,20 +59,25 @@ export function EventCard({ title, time, location, type, description }: EventCar
         >
           {title}
         </Text>
-        {typeLabel ? (
-          <View
-            style={{
-              backgroundColor: typeColor + "20",
-              borderRadius: 6,
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-            }}
-          >
-            <Text style={{ fontSize: 11, fontWeight: "600", color: typeColor }}>
-              {typeLabel}
-            </Text>
-          </View>
-        ) : null}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          {typeLabel ? (
+            <View
+              style={{
+                backgroundColor: typeColor + "20",
+                borderRadius: 6,
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+              }}
+            >
+              <Text style={{ fontSize: 11, fontWeight: "600", color: typeColor }}>
+                {typeLabel}
+              </Text>
+            </View>
+          ) : null}
+          <TouchableOpacity onPress={handleShare} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="share-outline" size={16} color={TempleColors.textSecondary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {time ? (
