@@ -23,8 +23,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // Log to console in development; swap in Crashlytics/Sentry here later
-    console.error("[ErrorBoundary]", error, info.componentStack);
+    if (__DEV__) {
+      console.error("[ErrorBoundary]", error, info.componentStack);
+    }
   }
 
   handleRetry = () => {

@@ -35,7 +35,7 @@ export default function VolunteerScreen() {
 
   const handleSubmit = async () => {
     if (!name.trim()) { Alert.alert("Required", "Please enter your name."); return; }
-    if (!email.trim() || !email.includes("@")) { Alert.alert("Required", "Please enter a valid email."); return; }
+    if (!phone.trim()) { Alert.alert("Required", "Please enter your phone number."); return; }
     if (selected.length === 0) { Alert.alert("Required", "Please select at least one area of interest."); return; }
 
     setLoading(true);
@@ -125,8 +125,8 @@ export default function VolunteerScreen() {
         <SectionHeader title="Your Details" />
         <Card>
           <InputField label="Full Name *" value={name} onChange={setName} placeholder="Your name" />
-          <InputField label="Email *" value={email} onChange={setEmail} placeholder="your@email.com" keyboard="email-address" />
-          <InputField label="Phone" value={phone} onChange={setPhone} placeholder="(optional)" keyboard="phone-pad" last />
+          <InputField label="Phone Number *" value={phone} onChange={setPhone} placeholder="(555) 555-5555" keyboard="phone-pad" />
+          <InputField label="Email" value={email} onChange={setEmail} placeholder="your@email.com (optional)" keyboard="email-address" last />
         </Card>
 
         <SectionHeader title="Areas of Interest *" subtitle="Select all that apply" />

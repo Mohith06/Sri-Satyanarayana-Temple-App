@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sstgh.temple"
+      "bundleIdentifier": "com.sstgh.temple",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "Sri Satyanarayana Temple sends notifications for upcoming events, pujas, and announcements."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +22,8 @@
         "backgroundColor": "#FDFAF6"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.sstgh.temple"
+      "package": "com.sstgh.temple",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -49,8 +54,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#8B1A1A"
         }
-      ],
-      "expo-mail-composer"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

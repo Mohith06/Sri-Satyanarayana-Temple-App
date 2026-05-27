@@ -35,8 +35,8 @@ const _schema = i.schema({
     }),
     volunteers: i.entity({
       name: i.string(),
-      email: i.string().indexed(),
-      phone: i.string().optional(),
+      email: i.string().indexed().optional(),
+      phone: i.string(),
       interests: i.string(),
       message: i.string().optional(),
       submittedAt: i.number().indexed(),

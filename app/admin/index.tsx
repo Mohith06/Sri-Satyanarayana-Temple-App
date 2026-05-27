@@ -4,14 +4,14 @@ import { useRouter } from "expo-router";
 import { id } from "@instantdb/react-native";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import * as MailComposer from "expo-mail-composer";
+import * as SMS from "expo-sms";
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "@/lib/db";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TempleColors } from "@/constants/Colors";
 import { EVENT_TYPE_LABELS, VOLUNTEER_INTERESTS } from "@/lib/templeData";
-import { VOLUNTEER_EMAIL_TEMPLATES } from "@/lib/volunteerEmailTemplates";
+import { VOLUNTEER_SMS_TEMPLATES } from "@/lib/volunteerSmsTemplates";
 
 const SEGMENTS = ["Events", "News", "Volunteers", "Gallery"] as const;
 type Segment = (typeof SEGMENTS)[number];
@@ -27,35 +27,32 @@ export default function AdminDashboard() {
   const [uploadCaption, setUploadCaption] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // Volunteer email state
+  // Volunteer SMS state
   const [groupModalVisible, setGroupModalVisible] = useState(false);
   const [composeModalVisible, setComposeModalVisible] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState("");
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
+  const [smsBody, setSmsBody] = useState("");
 
-  const openComposeForInterest = (interest: string) => {
-    const template = VOLUNTEER_EMAIL_TEMPLATES[interest];
+  const openSMSComposeForInterest = (interest: string) => {
     setSelectedInterest(interest);
-    setEmailSubject(template?.subject ?? `SSTGH Volunteer — ${interest}`);
-    setEmailBody(template?.body ?? "");
+    setSmsBody(VOLUNTEER_SMS_TEMPLATES[interest] ?? `SSTGH Volunteer: We need your help with "${interest}" on [DATE] at [TIME] at [LOCATION]. Questions? Info@sstgh.org`);
     setGroupModalVisible(false);
     setComposeModalVisible(true);
   };
 
-  const sendGroupEmail = async () => {
+  const sendGroupSMS = async () => {
     const volunteers = data?.volunteers ?? [];
-    const recipients = volunteers
+    const phones = volunteers
       .filter((v) => { try { return (JSON.parse(v.interests) as string[]).includes(selectedInterest); } catch { return false; } })
-      .map((v) => v.email)
-      .filter(Boolean);
+      .map((v) => v.phone)
+      .filter(Boolean) as string[];
 
-    const available = await MailComposer.isAvailableAsync();
+    const available = await SMS.isAvailableAsync();
     if (!available) {
-      Alert.alert("Mail not set up", "Please configure a mail account on your device to send emails.");
+      Alert.alert("SMS not available", "This device cannot send SMS messages.");
       return;
     }
-    await MailComposer.composeAsync({ recipients, subject: emailSubject, body: emailBody });
+    await SMS.sendSMSAsync(phones, smsBody);
   };
 
   const getVolunteerCountForInterest = (interest: string) => {
@@ -257,8 +254,8 @@ export default function AdminDashboard() {
             onPress={() => setGroupModalVisible(true)}
             style={{ flexDirection: "row", alignItems: "center", gap: 6, marginHorizontal: 16, marginBottom: 8, backgroundColor: TempleColors.deepRed, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, alignSelf: "flex-start" }}
           >
-            <Ionicons name="mail" size={16} color="#fff" />
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 13 }}>Email Volunteers</Text>
+            <Ionicons name="chatbubble" size={16} color="#fff" />
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 13 }}>Text Volunteers</Text>
           </TouchableOpacity>
           <FlatList
           data={data?.volunteers ?? []}
@@ -279,8 +276,8 @@ export default function AdminDashboard() {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={{ fontSize: 13, color: TempleColors.saffron, marginBottom: 2 }}>{item.email}</Text>
-                {item.phone ? <Text style={{ fontSize: 12, color: TempleColors.textSecondary }}>{item.phone}</Text> : null}
+                <Text style={{ fontSize: 13, fontWeight: "600", color: TempleColors.textPrimary, marginBottom: 2 }}>{item.phone}</Text>
+                {item.email ? <Text style={{ fontSize: 12, color: TempleColors.textSecondary }}>{item.email}</Text> : null}
                 {interests.length > 0 && (
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
                     {interests.map((i) => (
@@ -386,7 +383,7 @@ export default function AdminDashboard() {
       <Modal visible={groupModalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setGroupModalVisible(false)}>
         <View style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: TempleColors.border }}>
-            <Text style={{ fontSize: 16, fontWeight: "700", color: TempleColors.textPrimary }}>Email Volunteers by Interest</Text>
+            <Text style={{ fontSize: 16, fontWeight: "700", color: TempleColors.textPrimary }}>Text Volunteers by Interest</Text>
             <TouchableOpacity onPress={() => setGroupModalVisible(false)}>
               <Ionicons name="close" size={24} color={TempleColors.textSecondary} />
             </TouchableOpacity>
@@ -403,12 +400,12 @@ export default function AdminDashboard() {
                     </Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => openComposeForInterest(interest)}
+                    onPress={() => openSMSComposeForInterest(interest)}
                     disabled={count === 0}
                     style={{ backgroundColor: count === 0 ? TempleColors.border : TempleColors.deepRed, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 6 }}
                   >
-                    <Ionicons name="mail-outline" size={14} color="#fff" />
-                    <Text style={{ color: "#fff", fontWeight: "600", fontSize: 12 }}>Email</Text>
+                    <Ionicons name="chatbubble-outline" size={14} color="#fff" />
+                    <Text style={{ color: "#fff", fontWeight: "600", fontSize: 12 }}>Text</Text>
                   </TouchableOpacity>
                 </View>
               );
@@ -417,7 +414,7 @@ export default function AdminDashboard() {
         </View>
       </Modal>
 
-      {/* Compose modal */}
+      {/* SMS Compose modal */}
       <Modal visible={composeModalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setComposeModalVisible(false)}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <View style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}>
@@ -429,37 +426,30 @@ export default function AdminDashboard() {
             </View>
             <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
               {/* Recipients */}
-              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>TO</Text>
+              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>RECIPIENTS</Text>
               <View style={{ backgroundColor: TempleColors.cardBg, borderRadius: 10, padding: 12, borderWidth: 1, borderColor: TempleColors.border, marginBottom: 14 }}>
                 {(data?.volunteers ?? [])
                   .filter((v) => { try { return (JSON.parse(v.interests) as string[]).includes(selectedInterest); } catch { return false; } })
                   .map((v) => (
-                    <Text key={v.id} style={{ fontSize: 13, color: TempleColors.saffron, marginBottom: 2 }}>{v.name} — {v.email}</Text>
+                    <Text key={v.id} style={{ fontSize: 13, color: TempleColors.textPrimary, marginBottom: 2 }}>{v.name} — <Text style={{ color: TempleColors.saffron }}>{v.phone}</Text></Text>
                   ))}
               </View>
-              {/* Subject */}
-              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>SUBJECT</Text>
+              {/* Message */}
+              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>MESSAGE</Text>
               <TextInput
-                value={emailSubject}
-                onChangeText={setEmailSubject}
-                style={{ borderWidth: 1, borderColor: TempleColors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: TempleColors.textPrimary, backgroundColor: TempleColors.warmWhite, marginBottom: 14 }}
-              />
-              {/* Body */}
-              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>BODY</Text>
-              <TextInput
-                value={emailBody}
-                onChangeText={setEmailBody}
+                value={smsBody}
+                onChangeText={setSmsBody}
                 multiline
-                style={{ borderWidth: 1, borderColor: TempleColors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: TempleColors.textPrimary, backgroundColor: TempleColors.warmWhite, minHeight: 300, textAlignVertical: "top" }}
+                style={{ borderWidth: 1, borderColor: TempleColors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: TempleColors.textPrimary, backgroundColor: TempleColors.warmWhite, minHeight: 180, textAlignVertical: "top" }}
               />
             </ScrollView>
             <View style={{ padding: 16, gap: 10, borderTopWidth: 1, borderTopColor: TempleColors.border }}>
               <TouchableOpacity
-                onPress={sendGroupEmail}
+                onPress={sendGroupSMS}
                 style={{ backgroundColor: TempleColors.deepRed, borderRadius: 12, paddingVertical: 14, alignItems: "center", flexDirection: "row", justifyContent: "center", gap: 8 }}
               >
-                <Ionicons name="mail" size={18} color="#fff" />
-                <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Open in Mail App</Text>
+                <Ionicons name="chatbubble" size={18} color="#fff" />
+                <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Open SMS App</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setComposeModalVisible(false)}
