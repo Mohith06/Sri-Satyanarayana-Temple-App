@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { TempleColors } from "@/constants/Colors";
@@ -24,38 +25,47 @@ export function WelcomeBanner({ onAdminPress }: WelcomeBannerProps) {
         paddingHorizontal: 20,
       }}
     >
-      <Text
-        style={{
-          fontSize: 12,
-          fontWeight: "600",
-          color: TempleColors.gold,
-          letterSpacing: 2,
-          textTransform: "uppercase",
-          marginBottom: 6,
-        }}
-      >
-        ॐ नमः शिवाय
-      </Text>
-      <Text
-        style={{
-          fontSize: 26,
-          fontWeight: "800",
-          color: "#FFFFFF",
-          lineHeight: 32,
-          marginBottom: 12,
-        }}
-      >
-        {TEMPLE_NAME}
-      </Text>
-      <Text
-        style={{
-          fontSize: 13,
-          color: "rgba(255,255,255,0.75)",
-          marginBottom: 16,
-        }}
-      >
-        of Greater Houston
-      </Text>
+      {/* Logo + title row */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 12 }}>
+        <Image
+          source={require("@/assets/images/logo.png")}
+          style={{ width: 64, height: 64, borderRadius: 32 }}
+          contentFit="contain"
+        />
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: "600",
+              color: TempleColors.gold,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              marginBottom: 4,
+            }}
+          >
+            ॐ नमः शिवाय
+          </Text>
+          <Text
+            style={{
+              fontSize: 22,
+              fontWeight: "800",
+              color: "#FFFFFF",
+              lineHeight: 28,
+            }}
+          >
+            {TEMPLE_NAME}
+          </Text>
+          <Text
+            style={{
+              fontSize: 13,
+              color: "rgba(255,255,255,0.75)",
+              marginTop: 2,
+            }}
+          >
+            of Greater Houston
+          </Text>
+        </View>
+      </View>
 
       {/* Bottom row: status badge left, admin button right */}
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>

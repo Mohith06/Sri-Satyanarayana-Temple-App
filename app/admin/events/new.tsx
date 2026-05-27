@@ -8,14 +8,18 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  Share,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { id } from "@instantdb/react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { db } from "@/lib/db";
 import { TempleColors } from "@/constants/Colors";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Card } from "@/components/ui/Card";
 import { sendPushNotifications } from "@/lib/notifications";
+import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from "@/lib/templeData";
 
 const EVENT_TYPES = ["puja", "festival", "special", "class"];
 
@@ -35,6 +39,23 @@ export default function NewEventScreen() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+
+  const formattedPreviewDate = (() => {
+    try { return new Date(date + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }); }
+    catch { return date; }
+  })();
+
+  const handleSharePreview = () => {
+    const parts = [`🗓️ PREVIEW — Temple Event\n\n${title.trim()}`];
+    if (date) parts.push(formattedPreviewDate);
+    if (time) parts.push(`Time: ${time}`);
+    if (location) parts.push(`Location: ${location}`);
+    if (type) parts.push(`Type: ${EVENT_TYPE_LABELS[type] ?? type}`);
+    if (description) parts.push(`\n${description.trim()}`);
+    parts.push("\nSri Satyanarayana Temple of Greater Houston");
+    Share.share({ message: parts.join("\n") });
+  };
 
   const { data: tokenData } = db.useQuery({ pushTokens: {} });
 
@@ -143,35 +164,94 @@ export default function NewEventScreen() {
 
         <View style={{ paddingHorizontal: 16, marginTop: 16, gap: 10 }}>
           <TouchableOpacity
+            onPress={() => {
+              if (!title.trim() || !date.trim()) { Alert.alert("Fill in fields", "Add a title and date to preview."); return; }
+              setPreviewVisible(true);
+            }}
+            style={{ backgroundColor: TempleColors.deepRed + "12", borderRadius: 12, paddingVertical: 15, alignItems: "center", flexDirection: "row", justifyContent: "center", gap: 8, borderWidth: 1, borderColor: TempleColors.deepRed + "30" }}
+          >
+            <Ionicons name="eye-outline" size={18} color={TempleColors.deepRed} />
+            <Text style={{ color: TempleColors.deepRed, fontWeight: "700", fontSize: 15 }}>Preview & Share</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={handleSave}
             disabled={saving}
-            style={{
-              backgroundColor: saving ? TempleColors.border : TempleColors.saffron,
-              borderRadius: 12,
-              paddingVertical: 15,
-              alignItems: "center",
-            }}
+            style={{ backgroundColor: saving ? TempleColors.border : TempleColors.saffron, borderRadius: 12, paddingVertical: 15, alignItems: "center" }}
           >
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
-              {saving ? "Saving…" : "Create Event"}
-            </Text>
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>{saving ? "Saving…" : "Create Event"}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.back()}
             disabled={saving}
-            style={{
-              borderRadius: 12,
-              paddingVertical: 15,
-              alignItems: "center",
-              borderWidth: 1.5,
-              borderColor: TempleColors.border,
-            }}
+            style={{ borderRadius: 12, paddingVertical: 15, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
           >
-            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>
-              Cancel
-            </Text>
+            <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Cancel</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Preview Modal */}
+        <Modal visible={previewVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setPreviewVisible(false)}>
+          <View style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: TempleColors.border }}>
+              <Text style={{ fontSize: 16, fontWeight: "700", color: TempleColors.textPrimary }}>Preview</Text>
+              <TouchableOpacity onPress={() => setPreviewVisible(false)}>
+                <Ionicons name="close" size={24} color={TempleColors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 48 }}>
+              <View style={{
+                backgroundColor: TempleColors.cardBg, borderRadius: 12, padding: 14,
+                borderLeftWidth: 4, borderLeftColor: EVENT_TYPE_COLORS[type] ?? EVENT_TYPE_COLORS.default,
+                borderWidth: 1, borderColor: TempleColors.border,
+              }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: TempleColors.textPrimary, flex: 1, marginRight: 8 }}>{title || "Untitled Event"}</Text>
+                  {type ? (
+                    <View style={{ backgroundColor: (EVENT_TYPE_COLORS[type] ?? EVENT_TYPE_COLORS.default) + "20", borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "600", color: EVENT_TYPE_COLORS[type] ?? EVENT_TYPE_COLORS.default }}>{EVENT_TYPE_LABELS[type] ?? type}</Text>
+                    </View>
+                  ) : null}
+                </View>
+                {date ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
+                    <Ionicons name="calendar-outline" size={13} color={TempleColors.textSecondary} />
+                    <Text style={{ fontSize: 13, color: TempleColors.textSecondary }}>{formattedPreviewDate}</Text>
+                  </View>
+                ) : null}
+                {time ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
+                    <Ionicons name="time-outline" size={13} color={TempleColors.textSecondary} />
+                    <Text style={{ fontSize: 13, color: TempleColors.textSecondary }}>{time}</Text>
+                  </View>
+                ) : null}
+                {location ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
+                    <Ionicons name="location-outline" size={13} color={TempleColors.textSecondary} />
+                    <Text style={{ fontSize: 13, color: TempleColors.textSecondary }}>{location}</Text>
+                  </View>
+                ) : null}
+                {description ? (
+                  <Text style={{ fontSize: 13, color: TempleColors.textSecondary, marginTop: 8, lineHeight: 18 }}>{description}</Text>
+                ) : null}
+              </View>
+            </ScrollView>
+            <View style={{ padding: 16, gap: 10, borderTopWidth: 1, borderTopColor: TempleColors.border }}>
+              <TouchableOpacity
+                onPress={handleSharePreview}
+                style={{ backgroundColor: TempleColors.saffron, borderRadius: 12, paddingVertical: 14, alignItems: "center", flexDirection: "row", justifyContent: "center", gap: 8 }}
+              >
+                <Ionicons name="share-outline" size={18} color="#fff" />
+                <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Share Preview</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setPreviewVisible(false)}
+                style={{ borderRadius: 12, paddingVertical: 14, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
+              >
+                <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </KeyboardAvoidingView>
   );

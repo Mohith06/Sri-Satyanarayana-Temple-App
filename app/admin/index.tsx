@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, TextInput, Dimensions } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, TextInput, Dimensions, Modal, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { id } from "@instantdb/react-native";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
+import * as MailComposer from "expo-mail-composer";
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "@/lib/db";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TempleColors } from "@/constants/Colors";
-import { EVENT_TYPE_LABELS } from "@/lib/templeData";
+import { EVENT_TYPE_LABELS, VOLUNTEER_INTERESTS } from "@/lib/templeData";
+import { VOLUNTEER_EMAIL_TEMPLATES } from "@/lib/volunteerEmailTemplates";
 
 const SEGMENTS = ["Events", "News", "Volunteers", "Gallery"] as const;
 type Segment = (typeof SEGMENTS)[number];
@@ -24,6 +26,43 @@ export default function AdminDashboard() {
   const [uploadCategory, setUploadCategory] = useState("Festivals");
   const [uploadCaption, setUploadCaption] = useState("");
   const [uploading, setUploading] = useState(false);
+
+  // Volunteer email state
+  const [groupModalVisible, setGroupModalVisible] = useState(false);
+  const [composeModalVisible, setComposeModalVisible] = useState(false);
+  const [selectedInterest, setSelectedInterest] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+
+  const openComposeForInterest = (interest: string) => {
+    const template = VOLUNTEER_EMAIL_TEMPLATES[interest];
+    setSelectedInterest(interest);
+    setEmailSubject(template?.subject ?? `SSTGH Volunteer — ${interest}`);
+    setEmailBody(template?.body ?? "");
+    setGroupModalVisible(false);
+    setComposeModalVisible(true);
+  };
+
+  const sendGroupEmail = async () => {
+    const volunteers = data?.volunteers ?? [];
+    const recipients = volunteers
+      .filter((v) => { try { return (JSON.parse(v.interests) as string[]).includes(selectedInterest); } catch { return false; } })
+      .map((v) => v.email)
+      .filter(Boolean);
+
+    const available = await MailComposer.isAvailableAsync();
+    if (!available) {
+      Alert.alert("Mail not set up", "Please configure a mail account on your device to send emails.");
+      return;
+    }
+    await MailComposer.composeAsync({ recipients, subject: emailSubject, body: emailBody });
+  };
+
+  const getVolunteerCountForInterest = (interest: string) => {
+    return (data?.volunteers ?? []).filter((v) => {
+      try { return (JSON.parse(v.interests) as string[]).includes(interest); } catch { return false; }
+    }).length;
+  };
 
   const { data, isLoading } = db.useQuery({
     events: { $: { order: { date: "asc" } } },
@@ -213,7 +252,15 @@ export default function AdminDashboard() {
 
       {/* Volunteers */}
       {segment === "Volunteers" && (
-        <FlatList
+        <>
+          <TouchableOpacity
+            onPress={() => setGroupModalVisible(true)}
+            style={{ flexDirection: "row", alignItems: "center", gap: 6, marginHorizontal: 16, marginBottom: 8, backgroundColor: TempleColors.deepRed, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 8, alignSelf: "flex-start" }}
+          >
+            <Ionicons name="mail" size={16} color="#fff" />
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 13 }}>Email Volunteers</Text>
+          </TouchableOpacity>
+          <FlatList
           data={data?.volunteers ?? []}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, flexGrow: 1 }}
@@ -250,6 +297,7 @@ export default function AdminDashboard() {
             );
           }}
         />
+        </>
       )}
 
       {/* Gallery */}
@@ -333,6 +381,96 @@ export default function AdminDashboard() {
           />
         </>
       )}
+
+      {/* Group selection modal */}
+      <Modal visible={groupModalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setGroupModalVisible(false)}>
+        <View style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: TempleColors.border }}>
+            <Text style={{ fontSize: 16, fontWeight: "700", color: TempleColors.textPrimary }}>Email Volunteers by Interest</Text>
+            <TouchableOpacity onPress={() => setGroupModalVisible(false)}>
+              <Ionicons name="close" size={24} color={TempleColors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView contentContainerStyle={{ padding: 16, gap: 10 }}>
+            {VOLUNTEER_INTERESTS.map((interest) => {
+              const count = getVolunteerCountForInterest(interest);
+              return (
+                <View key={interest} style={{ backgroundColor: TempleColors.cardBg, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: TempleColors.border, flexDirection: "row", alignItems: "center", gap: 12 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "600", color: TempleColors.textPrimary }}>{interest}</Text>
+                    <Text style={{ fontSize: 12, color: TempleColors.textSecondary, marginTop: 2 }}>
+                      {count === 0 ? "No sign-ups yet" : `${count} volunteer${count === 1 ? "" : "s"}`}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => openComposeForInterest(interest)}
+                    disabled={count === 0}
+                    style={{ backgroundColor: count === 0 ? TempleColors.border : TempleColors.deepRed, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 6 }}
+                  >
+                    <Ionicons name="mail-outline" size={14} color="#fff" />
+                    <Text style={{ color: "#fff", fontWeight: "600", fontSize: 12 }}>Email</Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Compose modal */}
+      <Modal visible={composeModalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setComposeModalVisible(false)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+          <View style={{ flex: 1, backgroundColor: TempleColors.warmWhite }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: TempleColors.border }}>
+              <Text style={{ fontSize: 15, fontWeight: "700", color: TempleColors.textPrimary }} numberOfLines={1}>{selectedInterest}</Text>
+              <TouchableOpacity onPress={() => setComposeModalVisible(false)}>
+                <Ionicons name="close" size={24} color={TempleColors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
+              {/* Recipients */}
+              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>TO</Text>
+              <View style={{ backgroundColor: TempleColors.cardBg, borderRadius: 10, padding: 12, borderWidth: 1, borderColor: TempleColors.border, marginBottom: 14 }}>
+                {(data?.volunteers ?? [])
+                  .filter((v) => { try { return (JSON.parse(v.interests) as string[]).includes(selectedInterest); } catch { return false; } })
+                  .map((v) => (
+                    <Text key={v.id} style={{ fontSize: 13, color: TempleColors.saffron, marginBottom: 2 }}>{v.name} — {v.email}</Text>
+                  ))}
+              </View>
+              {/* Subject */}
+              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>SUBJECT</Text>
+              <TextInput
+                value={emailSubject}
+                onChangeText={setEmailSubject}
+                style={{ borderWidth: 1, borderColor: TempleColors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: TempleColors.textPrimary, backgroundColor: TempleColors.warmWhite, marginBottom: 14 }}
+              />
+              {/* Body */}
+              <Text style={{ fontSize: 12, fontWeight: "600", color: TempleColors.textSecondary, marginBottom: 6 }}>BODY</Text>
+              <TextInput
+                value={emailBody}
+                onChangeText={setEmailBody}
+                multiline
+                style={{ borderWidth: 1, borderColor: TempleColors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: TempleColors.textPrimary, backgroundColor: TempleColors.warmWhite, minHeight: 300, textAlignVertical: "top" }}
+              />
+            </ScrollView>
+            <View style={{ padding: 16, gap: 10, borderTopWidth: 1, borderTopColor: TempleColors.border }}>
+              <TouchableOpacity
+                onPress={sendGroupEmail}
+                style={{ backgroundColor: TempleColors.deepRed, borderRadius: 12, paddingVertical: 14, alignItems: "center", flexDirection: "row", justifyContent: "center", gap: 8 }}
+              >
+                <Ionicons name="mail" size={18} color="#fff" />
+                <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Open in Mail App</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setComposeModalVisible(false)}
+                style={{ borderRadius: 12, paddingVertical: 14, alignItems: "center", borderWidth: 1.5, borderColor: TempleColors.border }}
+              >
+                <Text style={{ color: TempleColors.textSecondary, fontWeight: "600", fontSize: 15 }}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }
