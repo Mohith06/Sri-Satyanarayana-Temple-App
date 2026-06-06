@@ -26,13 +26,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }): Reac
     AsyncStorage.getItem(ADMIN_STORAGE_KEY).then((val) => {
       if (val === "true") setIsAdmin(true);
       setIsLoading(false);
+    }).catch(() => {
+      setIsLoading(false);
     });
   }, []);
 
   const login = (code: string): boolean => {
     if (code === ADMIN_PASSCODE) {
       setIsAdmin(true);
-      AsyncStorage.setItem(ADMIN_STORAGE_KEY, "true");
+      AsyncStorage.setItem(ADMIN_STORAGE_KEY, "true").catch(() => {});
       return true;
     }
     return false;
@@ -40,7 +42,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }): Reac
 
   const logout = () => {
     setIsAdmin(false);
-    AsyncStorage.removeItem(ADMIN_STORAGE_KEY);
+    AsyncStorage.removeItem(ADMIN_STORAGE_KEY).catch(() => {});
   };
 
   return React.createElement(

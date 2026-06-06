@@ -47,12 +47,16 @@ export default function AdminDashboard() {
       .map((v) => v.phone)
       .filter(Boolean) as string[];
 
-    const available = await SMS.isAvailableAsync();
-    if (!available) {
-      Alert.alert("SMS not available", "This device cannot send SMS messages.");
-      return;
+    try {
+      const available = await SMS.isAvailableAsync();
+      if (!available) {
+        Alert.alert("SMS not available", "This device cannot send SMS messages.");
+        return;
+      }
+      await SMS.sendSMSAsync(phones, smsBody);
+    } catch {
+      Alert.alert("Error", "Could not open SMS. Please try again.");
     }
-    await SMS.sendSMSAsync(phones, smsBody);
   };
 
   const getVolunteerCountForInterest = (interest: string) => {

@@ -61,7 +61,8 @@ export default function NewEventScreen() {
 
   const handleSave = async () => {
     if (!title.trim()) { Alert.alert("Required", "Please enter an event title."); return; }
-    if (!date.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    const parsedDate = new Date(date + "T00:00:00");
+    if (!date.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) {
       Alert.alert("Required", "Please enter a valid date in YYYY-MM-DD format."); return;
     }
     setSaving(true);

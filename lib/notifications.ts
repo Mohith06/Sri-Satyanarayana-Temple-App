@@ -72,14 +72,21 @@ export async function sendPushNotifications(
   // Expo Push API limit: 100 messages per request
   for (let i = 0; i < messages.length; i += 100) {
     const chunk = messages.slice(i, i + 100);
-    await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(chunk),
-    });
+    try {
+      const response = await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(chunk),
+      });
+      if (!response.ok) {
+        console.error(`Push notification batch failed: ${response.status}`);
+      }
+    } catch {
+      console.error("Push notification network error");
+    }
   }
 }

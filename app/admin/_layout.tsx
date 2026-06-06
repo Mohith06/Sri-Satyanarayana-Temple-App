@@ -49,7 +49,6 @@ export default function AdminLayout() {
       <Stack.Screen name="events/[id]" options={{ title: "Edit Event", headerLeft: () => <BackButton /> }} />
       <Stack.Screen name="news/new" options={{ title: "New Announcement", headerLeft: () => <BackButton /> }} />
       <Stack.Screen name="news/[id]" options={{ title: "Edit Announcement", headerLeft: () => <BackButton /> }} />
-      <Stack.Screen name="volunteers/index" options={{ title: "Volunteer Applications", headerLeft: () => <BackButton /> }} />
     </Stack>
   );
 }

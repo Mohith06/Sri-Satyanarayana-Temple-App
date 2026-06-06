@@ -24,16 +24,18 @@ export function UnreadProvider({ children }: { children: React.ReactNode }) {
         // First install: treat all existing news as already seen so the badge
         // only fires for content added after the user installed the app.
         const now = Date.now();
-        AsyncStorage.setItem(LAST_SEEN_KEY, now.toString());
+        AsyncStorage.setItem(LAST_SEEN_KEY, now.toString()).catch(() => {});
         setLastSeenNews(now);
       }
+    }).catch(() => {
+      setLastSeenNews(Date.now());
     });
   }, []);
 
   const markNewsAsRead = () => {
     const now = Date.now();
     setLastSeenNews(now);
-    AsyncStorage.setItem(LAST_SEEN_KEY, now.toString());
+    AsyncStorage.setItem(LAST_SEEN_KEY, now.toString()).catch(() => {});
   };
 
   return (

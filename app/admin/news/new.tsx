@@ -50,7 +50,8 @@ export default function NewAnnouncementScreen() {
   const handleSave = async () => {
     if (!title.trim()) { Alert.alert("Required", "Please enter a title."); return; }
     if (!body.trim()) { Alert.alert("Required", "Please enter the announcement body."); return; }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    const parsedDate = new Date(date + "T00:00:00");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) {
       Alert.alert("Required", "Please enter a valid date in YYYY-MM-DD format."); return;
     }
     setSaving(true);
