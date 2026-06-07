@@ -9,11 +9,12 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.sstgh.temple",
-      "buildNumber": "1",
+      "buildNumber": "3",
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "Sri Satyanarayana Temple sends notifications for upcoming events, pujas, and announcements."
+        "NSUserNotificationsUsageDescription": "Sri Satyanarayana Temple sends notifications for upcoming events, pujas, and announcements.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -23,7 +24,10 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.sstgh.temple",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
