@@ -1,3 +1,10 @@
+Try my app!
+https://apps.apple.com/us/app/sri-satyanarayana-temple/id6777759720
+
+
+
+
+
 # Welcome to your InstantDB Expo app 👋
 
 [InstantDB Docs](https://www.instantdb.com/docs)
